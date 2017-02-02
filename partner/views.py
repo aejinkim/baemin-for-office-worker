@@ -28,6 +28,7 @@ def login(request):
             # partner의 메인 페이지로 넘겨줌
         else:
             ctx.update({"error":"사용자가 없습니다."})
+            # ctx의 dictionary를 업데이트 함
 
 
 def logout(request):

@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from .views import index,  signup, login, logout
+from .views import index, signup, login, logout
 
 urlpatterns = [
     # url(r'^$', views.home, name='home')
