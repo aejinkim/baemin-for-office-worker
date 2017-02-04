@@ -1,20 +1,35 @@
 from django.contrib.auth import (
     authenticate,
     login as auth_login,
-    logout as auth_logout,
+    logout as auth_logout
 )
 # login 이 위에도 있고 아래도 있어서 두개가 넘어간것으로 생각하여 에러가남. 따라서 위의 로그인을 더 명확하게 지정함
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from .forms import PartnerForm, MenuForm
+from .models import Menu
+
 
 # Create your views here.
 def index(request):
     ctx = {}
+    if request.method == "GET":
+        partner_form = PartnerForm()
+        ctx.update({"form":partner_form})
+    elif request.method == "POST":
+        partner_form = PartnerForm(request.POST)
+        if partner_form.is_valid():
+            partner = partner_form.save(commit = False)
+            partner.user = request.user
+            partner.save()
+            return redirect("/partner/")
+        else:
+            ctx.update = {"form" : partner_form}
+
     return render(request, "index.html", ctx)
 
 def login(request):
     ctx = {}
-    return render(request, "login.html", ctx)
 
     if request.method == "GET":
         pass
@@ -23,18 +38,14 @@ def login(request):
         password = request.POST.get("password")
         user = authenticate(username=username, password=password)
         if user is not None:
-            login(request, user)
+            auth_login(request, user)
             return redirect("/partner/")
             # partner의 메인 페이지로 넘겨줌
         else:
             ctx.update({"error":"사용자가 없습니다."})
             # ctx의 dictionary를 업데이트 함
 
-
-def logout(request):
-    auth_logout(request)
-    return redirect("/partner/")
-
+    return render(request, "login.html", ctx)
 
 def signup(request):
     if request.method == "GET":
@@ -44,11 +55,91 @@ def signup(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
         # print(username,email, password)
-
         user = User.objects.create_user(username, email, password)
         # Article.objects.creat(title="", content="")
 
-
     ctx = {}
     return render(request, "signup.html", ctx)
+
+def logout(request):
+    auth_logout(request)
+    return redirect("/partner/")
+
+def edit_info(request):
+    ctx = {}
+    #Article.objects.all()#query
+    #partner = Partner.objects.get(user=request.user)
+
+    if request.method == "GET":
+        partner_form = PartnerForm(instance=request.user.partner)
+        ctx.update({"form":partner_form})
+    elif request.method == "POST":
+        partner_form = PartnerForm(
+            request.POST,
+            instance = request.user.partner
+            )
+        if partner_form.is_valid():
+            partner = partner_form.save(commit = False)
+            partner.user = request.user
+            partner.save()
+            return redirect("/partner/")
+        else:
+            ctx.update = {"form" : partner_form}
+
+    return render(request, "edit_info.html", ctx)
 # signup.html 안에 input과 id가 있음
+
+def menu(request):
+    ctx = {}
+
+    menu_list = Menu.objects.filter(partner = request.user.partner)
+    ctx.update({"menu_list": menu_list})
+
+    return render (request, "menu_list.html", ctx)
+
+def menu_add(request):
+    ctx = {}
+
+    if request.method == "GET":
+        form = MenuForm()
+        ctx.update({ "form": form })
+    elif request.method == "POST":
+        form = MenuForm(request.POST, request.FILES)
+        if form.is_valid():
+            menu = form.save(commit=False)
+            menu.partner = request.user.partner
+            menu.save()
+            return redirect("/partner/menu/")
+        else:
+            ctx.update({ "form": form })
+
+    return render(request, "menu_add.html", ctx)
+def menu_detail(request, menu_id):
+    menu = Menu.objects.get(id=menu_id)
+    ctx = { "menu" : menu }
+    return render(request, "menu_detail.html", ctx)
+
+def menu_edit(request, menu_id):
+
+    ctx = { "replacement" : "수정" }
+    menu = Menu.objects.get(id=menu_id)
+
+    if request.method == "GET":
+        form = MenuForm(instance=menu)
+        ctx.update({ "form": form })
+    elif request.method == "POST":
+        form = MenuForm(request.POST, request.FILES, instance=menu)
+        if form.is_valid():
+            menu = form.save(commit=False)
+            menu.partner = request.user.partner
+            menu.save()
+            return redirect("/partner/menu/")
+        else:
+            ctx.update({ "form": form })
+
+    return render(request, "menu_add.html", ctx)
+
+def menu_delete(request, menu_id):
+    menu = Menu.objects.get(id=menu_id)
+    menu.delete()
+    return redirect("/partner/menu/")

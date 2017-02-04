@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block body %}
+  {% include "navbar.html" %}
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+        <div class="row">
+          {% for partner in partner_list %}
+          <div class="col-sm-4">
+            <h3>{{ partner.name }}</h3>
+            <div>{{ partner.address }}</div>
+          </div>
+          {% endfor %}
+          <!--  -->
+            <div class="col-sm-4">
+              <h3>호식이</h3>
+              <div>서울 은평구 </div>
+            </div>
+            <div class="col-sm-4">
+              <h3>호식이</h3>
+              <div>서울 은평구 </div>
+            </div>
+            <div class="col-sm-4">
+              <h3>호식이</h3>
+              <div>서울 은평구 </div>
+            </div>
+          <!--  -->
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

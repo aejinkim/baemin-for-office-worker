@@ -17,7 +17,14 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
+    url(r'^', include('client.urls')),
     url(r'^partner/', include('partner.urls')),
     url(r'^admin/', admin.site.urls),
-    # 여긴 $ 표시가 없으므로 계속 이어짐을 의미 함 
+    # 여긴 $ 표시가 없으므로 계속 이어짐을 의미 함
 ]
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
