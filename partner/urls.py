@@ -4,6 +4,7 @@ from .views import (
     edit_info,
     signup, login, logout, #auth
     menu, menu_add,menu_detail,menu_edit, menu_delete,
+    order,
 )
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     url(r'^menu/(?P<menu_id>\d+)/$', menu_detail, name="menu_detail" ),
     url(r'^menu/(?P<menu_id>\d+)/edit/$', menu_edit, name="menu_edit" ),
     url(r'^menu/(?P<menu_id>\d+)/delete/$', menu_delete, name="menu_delete" ),
+    url(r'^order/$', order, name="order" ),
 
     # $ 표시는 정규식 표현임 : 끝이 났다는 것을 의미함
 ]
